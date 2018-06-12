@@ -14,6 +14,7 @@ class Migrator():
         self.db = db
 
     def dumpfiles(self, collection):
+        mime = MimeTypes()
 
         db = MongoClient()[self.db]
         uploadsCol = db[collection]
@@ -23,17 +24,25 @@ class Migrator():
 
         for upload in uploads:
             if upload["store"] == "GridFS:Uploads":
-                path = upload["path"]
-                pathSegments = path.split("/")
-                gridfsId = pathSegments[3]
-                for res in fs.find({"_id": gridfsId}):
-                    data = res.read()
-                    fileext = upload["extension"]
-                    filename = gridfsId+"."+fileext
-                    file = open(self.outDir+"/"+filename, "wb")
-                    file.write(data)
-                    file.close()
-                    self.addtolog(gridfsId, filename, collection, res.md5)
+                if upload["complete"] is True:
+                    path = upload["path"]
+                    pathSegments = path.split("/")
+                    gridfsId = pathSegments[3]
+                    for res in fs.find({"_id": gridfsId}):
+                        data = res.read()
+                        fileext = ""
+                        if "extension" in upload:
+                            fileext = upload["extension"]
+                        else:
+                            fileext = mime.guess_extension(res.content_type)
+                        if fileext is not None:
+                            filename = gridfsId+"."+fileext
+                        else:
+                            filename = gridfsId
+                        file = open(self.outDir+"/"+filename, "wb")
+                        file.write(data)
+                        file.close()
+                        self.addtolog(gridfsId, filename, collection, res.md5)
         self.writelog()
 
     def addtolog(self, dbId, filename, collection, md5):
@@ -91,7 +100,6 @@ class Migrator():
                     continue
 
 
-
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         if len(sys.argv) > 2 and sys.argv[1] == "dump":
@@ -100,7 +108,7 @@ if __name__ == "__main__":
                 obj = Migrator(sys.argv[2],sys.argv[3])
             else:
                 obj = Migrator(sys.argv[2])
-            obj.dumpfiles("rocketchat_uploads")
+            obj.dumpfiles("rocketchat_avatars")
             #obj.dumpfiles("custom_emoji")
             #obj.dumpfiles("assets")
         elif len(sys.argv) >2 and sys.argv[1] == "dedup":

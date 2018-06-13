@@ -6,21 +6,24 @@ from mimetypes import MimeTypes
 import sys
 import getopt
 import csv
+import argparse
 
 class Migrator():
-    def __init__(self, directory, db="rocketchat"):
+    def __init__(self, directory, db="rocketchat", host="localhost",port=27017):
         self.outDir = directory
         self.log = list()
         self.db = db
+        self.host = host
+        self.port = port
 
     def dumpfiles(self, collection):
         mime = MimeTypes()
 
         db = MongoClient()[self.db]
-        uploadsCol = db[collection]
-        fs = gridfs.GridFSBucket(db, collection)
+        uploadsCollection = db[collection]
+        fs = gridfs.GridFSBucket(db, bucket_name=collection)
 
-        uploads = uploadsCol.find({})
+        uploads = uploadsCollection.find({}, no_cursor_timeout=True)
 
         for upload in uploads:
             if upload["store"] == "GridFS:Uploads":
@@ -89,11 +92,8 @@ class Migrator():
             reader = csv.reader(csvfile, delimiter=',')
             for row in reader:
                 dbId = row[0]
-                filename = row[1]
                 collectionName = row[2]
-                md5 = row[3]
-                collection = db[collectionName]
-                fs = gridfs.GridFSBucket(db, collectionName)
+                fs = gridfs.GridFSBucket(db, bucket_name=collectionName)
                 try:
                     fs.delete(dbId)
                 except:
@@ -101,31 +101,24 @@ class Migrator():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        if len(sys.argv) > 2 and sys.argv[1] == "dump":
-            obj = None
-            if len(sys.argv) == 4:
-                obj = Migrator(sys.argv[2],sys.argv[3])
-            else:
-                obj = Migrator(sys.argv[2])
-            obj.dumpfiles("rocketchat_avatars")
-            #obj.dumpfiles("custom_emoji")
-            #obj.dumpfiles("assets")
-        elif len(sys.argv) >2 and sys.argv[1] == "dedup":
-            if len(sys.argv) == 4:
-                obj = Migrator(sys.argv[2], sys.argv[3])
-            else:
-                obj = Migrator(sys.argv[2])
-            obj.dedup()
-        elif len(sys.argv) >2 and sys.argv[1] == "updatedb":
-            if len(sys.argv) == 4:
-                obj = Migrator(sys.argv[2], sys.argv[3])
-            else:
-                obj = Migrator(sys.argv[2])
-            obj.updateDb()
-        elif len(sys.argv) >2 and sys.argv[1] == "removeblobs":
-            if len(sys.argv) == 4:
-                obj = Migrator(sys.argv[2], sys.argv[3])
-            else:
-                obj = Migrator(sys.argv[2])
-            obj.removeBlobs()
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('-s', '--host', help='mongodb host')
+    parser.add_argument('-p', '--port', help='mongodb port')
+    parser.add_argument('-r', '--database', help='database')
+    parser.add_argument('-c', '--command', help='[dump|updatedb|removeblobs]')
+    parser.add_argument('-d', '--dir', help='files dir')
+
+    parser.set_defaults(host="localhost", port="27017", database="rocketchat")
+
+    args = parser.parse_args()
+
+    obj = Migrator(args.dir, args.database, args.host, args.port)
+
+    if args.command == "dump":
+        obj.dumpfiles("rocketchat_uploads")
+
+    if args.command == "updatedb":
+        obj.updateDb()
+
+    if args.command == "removeblobs":
+        obj.removeBlobs()

@@ -9,7 +9,7 @@ import csv
 import argparse
 
 class Migrator():
-    def __init__(self, directory, db="rocketchat", host="localhost",port=27017):
+    def __init__(self, directory, db="rocketchat", host="localhost", port=27017):
         self.outDir = directory
         self.log = list()
         self.db = db
@@ -19,7 +19,7 @@ class Migrator():
     def dumpfiles(self, collection):
         mime = MimeTypes()
 
-        db = MongoClient()[self.db]
+        db = MongoClient(host=self.host, port=self.port)[self.db]
         uploadsCollection = db[collection]
         fs = gridfs.GridFSBucket(db, bucket_name=collection)
 
@@ -68,7 +68,7 @@ class Migrator():
 
     def updateDb(self):
         with open(self.outDir+"/log.csv") as csvfile:
-            db = MongoClient()[self.db]
+            db = MongoClient(host=self.host, port=self.port)[self.db]
             reader = csv.reader(csvfile, delimiter=',')
             for row in reader:
                 dbId = row[0]
@@ -88,7 +88,7 @@ class Migrator():
 
     def removeBlobs(self):
         with open(self.outDir + "/log.csv") as csvfile:
-            db = MongoClient()[self.db]
+            db = MongoClient(host=self.host, port=self.port)[self.db]
             reader = csv.reader(csvfile, delimiter=',')
             for row in reader:
                 dbId = row[0]
@@ -108,11 +108,11 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--command', help='[dump|updatedb|removeblobs]')
     parser.add_argument('-d', '--dir', help='files dir')
 
-    parser.set_defaults(host="localhost", port="27017", database="rocketchat")
+    parser.set_defaults(host="localhost", port=27017, database="rocketchat")
 
     args = parser.parse_args()
 
-    obj = Migrator(args.dir, args.database, args.host, args.port)
+    obj = Migrator(args.dir, args.database, args.host, int(args.port))
 
     if args.command == "dump":
         obj.dumpfiles("rocketchat_uploads")

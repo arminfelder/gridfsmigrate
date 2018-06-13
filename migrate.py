@@ -38,7 +38,7 @@ class Migrator():
                             fileext = upload["extension"]
                         else:
                             fileext = mime.guess_extension(res.content_type)
-                        if fileext is not None:
+                        if fileext != "":
                             filename = gridfsId+"."+fileext
                         else:
                             filename = gridfsId

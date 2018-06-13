@@ -1,6 +1,6 @@
 ## RocketChat GridFS to Filesystem migration script
 
-migrate [command] [targetPath] [dbname]
+migrate -c [command] -d [targetPath] -r [dbname]
 
 e.g. ./migrate -c dump -d /app/uploads -r meteor
 

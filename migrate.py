@@ -27,7 +27,7 @@ class Migrator():
 
         for upload in uploads:
             if upload["store"] == "GridFS:Uploads":
-                if upload["complete"] is True:
+                if "complete" in upload and upload["complete"] is True:
                     path = upload["path"]
                     pathSegments = path.split("/")
                     gridfsId = pathSegments[3]
@@ -46,6 +46,8 @@ class Migrator():
                         file.write(data)
                         file.close()
                         self.addtolog(gridfsId, filename, collection, res.md5)
+                else:
+                    print(upload)
         self.writelog()
 
     def addtolog(self, dbId, filename, collection, md5):

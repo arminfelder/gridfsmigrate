@@ -1,5 +1,7 @@
 ## RocketChat GridFS to FileSystem/AmazonS3 Migration
 
+This is a script for migrating files uploaded to [RocketChat](https://rocket.chat/) from the default `GridFS` upload store to FileSystem/AmazonS3.
+
     migrate -c [command] -d [targetPath] -r [dbname] -t [target] -d [destination]
 
 ### Help
@@ -15,15 +17,16 @@ Run `./migrate -h` to see all available options
 
 1. Backup your MongoDB database so that you won't loose any data in case of any issues. ([MongoDB Backup Methods](https://docs.mongodb.com/manual/core/backups/))
 2. Change `Storage Type` in RocketChat under `Administration> File Upload` to `FileSystem` or `AmazonS3`. Update the relevant configuration under the corresponding head in configuration page.
-3. To migrate to local file system 
+3. Start copying files to the new store  
+   - **File System**
 
-        ./migrate -c dump -d /app/uploads -r rocketchat -t FileSystem -d ./uploads
+            ./migrate -c dump -d /app/uploads -r rocketchat -t FileSystem -d ./uploads
 
-   To migrate to Amazon S3
+   - **S3**
 
-        ./migrate -c dump -d /app/uploads -r rocketchat -t AmazonS3 -d bucket_name
+            ./migrate -c dump -d /app/uploads -r rocketchat -t AmazonS3 -d bucket_name
 
-4. Update the database to use new location (use `-t AmazonS3` if you are migrating to S3)
+4. Update the database to use new store (use `-t AmazonS3` if you are migrating to S3)
 
         ./migrate -c updatedb -d /app/uploads -r rocketchat -t FileSystem
 

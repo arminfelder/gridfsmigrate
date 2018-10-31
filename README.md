@@ -1,20 +1,33 @@
-## RocketChat GridFS to Filesystem migration script
+## RocketChat GridFS to FileSystem/AmazonS3 Migration
 
-migrate -c [command] -d [targetPath] -r [dbname]
+    migrate -c [command] -d [targetPath] -r [dbname] -t [target] -d [destination]
 
-e.g. ./migrate -c dump -d /app/uploads -r meteor
+### Help
 
-### commands
-- dump :        dumps the GridFs stored files into the given folder and writers a log(log.csv)
-- updatedb :    changes the database entries to point to your stored files instead of GridFS
-- removeblobs : removes migrated files from GridFS
+Run `./migrate -h` to see all available options
 
-### steps
+### Commands
+- **dump** :        dumps the GridFs stored files into the given folder/s3 bucket and writes a log files
+- **updatedb** :    changes the database entries to point to the new store instead of GridFS
+- **removeblobs** : removes migrated files from GridFS
 
-1. for safety do a mongo backup with mongodump
-2. switch RocketChat to FileSystem and set a folder to store the uploads(e.g. /app/uploads)
-3. run ./migrate -c dump -d /app/uploads -r rocketchat
-4. run ./migrate -c updatedb -d /app/uploads -r rocketchat
-5. have a look, if everything looks fine e.g are files missing etc.
-6. run ./migrate -c removeblobs -d /app/uploads -r rocketchat
+### Steps
 
+1. Backup your MongoDB database so that you won't loose any data in case of any issues. ([MongoDB Backup Methods](https://docs.mongodb.com/manual/core/backups/))
+2. Change `Storage Type` in RocketChat under `Administration> File Upload` to `FileSystem` or `AmazonS3`. Update the relevant configuration under the corresponding head in configuration page.
+3. To migrate to local file system 
+
+        ./migrate -c dump -d /app/uploads -r rocketchat -t FileSystem -d ./uploads
+
+   To migrate to Amazon S3
+
+        ./migrate -c dump -d /app/uploads -r rocketchat -t AmazonS3 -d bucket_name
+
+4. Update the database to use new location (use `-t AmazonS3` if you are migrating to S3)
+
+        ./migrate -c updatedb -d /app/uploads -r rocketchat -t FileSystem
+
+5. Check if everything is working correctly. Ensure that there are no files missing.
+6. Remove obsolete data from GridFS
+
+        ./migrate -c removeblobs -d /app/uploads -r rocketchat

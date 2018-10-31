@@ -72,8 +72,8 @@ class Migrator():
         i = 0
         for upload in uploads:
             if upload["store"] == "GridFS:Uploads":
+                gridfsId = upload['_id']
                 if "complete" in upload and upload["complete"] is True:
-                    gridfsId = upload['_id']
                     for res in fs.find({"_id": gridfsId}):
                         data = res.read()
                         filename = gridfsId
@@ -100,7 +100,7 @@ class Migrator():
                             "key": key
                         })
                 else:
-                    print(upload)
+                    print("[Warning] Skipping incomplete upload %s" % (gridfsId), file=sys.stderr)
         self.writelog()
 
     def addtolog(self, entry):

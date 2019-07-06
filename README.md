@@ -13,6 +13,19 @@ Run `./migrate -h` to see all available options
 - **updatedb** :    changes the database entries to point to the new store instead of GridFS
 - **removeblobs** : removes migrated files from GridFS
 
+### Requirements
+
+#### Dependencies
+- python3 (e.g. apt install python3 python3-pip) 
+- packages (pip3 install ...): 
+  - pymongo 
+  - boto3
+
+#### Environment
+- if you use Amazon S3, make sure that the credentials are available as environment variables(https://boto3.amazonaws.com/v1/documentation/api/latest/guide/configuration.html)
+- export PYTHONIOENCODING=utf-8 , to prevent issue with non ASCII filenames
+
+
 ### Steps
 
 1. Backup your MongoDB database so that you won't loose any data in case of any issues. ([MongoDB Backup Methods](https://docs.mongodb.com/manual/core/backups/))

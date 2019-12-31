@@ -6,7 +6,7 @@ This is a script for migrating files uploaded to [RocketChat](https://rocket.cha
 
 ### Help
 
-Run `./migrate -h` to see all available options
+Run `./migrate.py -h` to see all available options
 
 ### Commands
 - **dump** :        dumps the GridFs stored files into the given folder/s3 bucket and writes a log files

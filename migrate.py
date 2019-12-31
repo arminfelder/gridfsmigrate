@@ -82,7 +82,7 @@ class Migrator():
         self.port = port
 
     def getdb(self):
-        return MongoClient(host=self.host, port=self.port)[self.db]
+        return MongoClient(host=self.host, port=self.port, retryWrites=False)[self.db]
 
     def dumpfiles(self, collection, store):
         mime = MimeTypes()

@@ -6,7 +6,7 @@ This is a script for migrating files uploaded to [RocketChat](https://rocket.cha
 
 ### Help
 
-Run `./migrate -h` to see all available options
+Run `./migrate.py -h` to see all available options
 
 ### Commands
 - **dump** :        dumps the GridFs stored files into the given folder/s3 bucket and writes a log files
@@ -33,17 +33,17 @@ Run `./migrate -h` to see all available options
 3. Start copying files to the new store  
    - **File System**
 
-            ./migrate -c dump -r rocketchat -t FileSystem -d ./uploads
+            ./migrate.py -c dump -r rocketchat -t FileSystem -d ./uploads
 
    - **S3**
 
-            ./migrate -c dump -r rocketchat -t AmazonS3 -d S3bucket_name
+            ./migrate.py -c dump -r rocketchat -t AmazonS3 -d S3bucket_name
 
 4. Update the database to use new store (use `-t AmazonS3` if you are migrating to S3)
 
-        ./migrate -c updatedb -d /app/uploads -r rocketchat -t FileSystem
+        ./migrate.py -c updatedb -d /app/uploads -r rocketchat -t FileSystem
 
 5. Check if everything is working correctly. Ensure that there are no files missing.
 6. Remove obsolete data from GridFS
 
-        ./migrate -c removeblobs -d /app/uploads -r rocketchat
+        ./migrate.py -c removeblobs -d /app/uploads -r rocketchat

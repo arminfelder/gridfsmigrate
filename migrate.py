@@ -32,6 +32,7 @@ import getopt
 import csv
 import argparse
 import urllib.parse
+import os
 
 
 class FileSystemStore():
@@ -82,7 +83,7 @@ class Migrator():
         self.port = port
 
     def getdb(self):
-        return MongoClient(host=self.host, port=self.port)[self.db]
+        return MongoClient(host=self.host, port=self.port, retryWrites=False)[self.db]
 
     def dumpfiles(self, collection, store):
         mime = MimeTypes()
@@ -149,7 +150,7 @@ class Migrator():
 
     def updateDb(self, target):
         with open(self.logfile) as csvfile:
-            db = MongoClient(host=self.host, port=self.port)[self.db]
+            db = self.getdb()
             reader = csv.reader(csvfile, delimiter=',')
 
             i = 0
@@ -180,7 +181,7 @@ class Migrator():
 
     def removeBlobs(self):
         with open(self.logfile) as csvfile:
-            db = MongoClient(host=self.host, port=self.port)[self.db]
+            db = self.getdb()
             reader = csv.reader(csvfile, delimiter=',')
 
             i = 0

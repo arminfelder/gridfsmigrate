@@ -32,6 +32,7 @@ import getopt
 import csv
 import argparse
 import urllib.parse
+import os
 
 
 class FileSystemStore():

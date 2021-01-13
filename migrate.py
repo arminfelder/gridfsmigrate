@@ -3,6 +3,7 @@ from pymongo import MongoClient
 import gridfs
 from pprint import pprint
 from mimetypes import MimeTypes
+import os
 import sys
 import getopt
 import csv

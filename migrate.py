@@ -75,16 +75,20 @@ class Migrator():
     def __init__(self,
                  db="rocketchat",
                  host="localhost",
+                 username="rocketchat",
+                 password="rocketchat",
                  port=27017,
                  logfile='./log.csv'):
         self.logfile = logfile
         self.log = list()
         self.db = db
         self.host = host
+        self.username = username
+        self.password = password
         self.port = port
 
     def getdb(self):
-        return MongoClient(host=self.host, port=self.port, retryWrites=False)[self.db]
+        return MongoClient(host=self.host, port=self.port, username=self.username, password=self.password, retryWrites=False)[self.db]
 
     def dumpfiles(self, collection, store):
         mime = MimeTypes()
@@ -207,12 +211,16 @@ if __name__ == "__main__":
         '-d', '--destination', help='s3 bucket|output directory')
     parser.add_argument(
         '-l', '--log-file', help='log file path', default='./log.csv')
+    parser.add_argument(
+        '--user', help='db user', default='rocketchat')
+    parser.add_argument(
+        '--password', help='db password', default='rocketchat')
 
     parser.set_defaults(host="localhost", port=27017, database="rocketchat")
 
     args = parser.parse_args()
 
-    obj = Migrator(args.database, args.host, int(args.port), args.log_file)
+    obj = Migrator(args.database, args.host, args.user, args.password, int(args.port), args.log_file)
 
     if args.command == "dump":
         if args.target == "AmazonS3":

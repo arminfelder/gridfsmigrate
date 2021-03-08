@@ -103,15 +103,10 @@ class Migrator():
                     for res in fs.find({"_id": gridfsId}):
                         data = res.read()
                         filename = gridfsId
-                        fileext = ""
 
-                        if "extension" in upload and upload["extension"] != "":
-                            fileext = "." + upload["extension"]
-                        else:
-                            fileext = mime.guess_extension(res.content_type)
-
-                        if fileext is not None and fileext != "":
-                            filename = filename + fileext
+                        # Only use the extension if it is in the db
+                        if upload.get("extension"):
+                            filename = filename + "." + upload["extension"]
 
                         i += 1
                         print("%i. Dumping %s %s" % (i, gridfsId,

@@ -52,7 +52,7 @@ Run `./migrate.py -h` to see all available options
 
 On some configurations, it might help to add the parameters "directconnection=True and connect=False" to the MongoClient constructor, such as:
 
-        MongoClient(..., retryWrites=False, directconnection=True)[self.db]
+        MongoClient(..., retryWrites=False, directconnection=True, connect=False)[self.db]
 
 So that the connection happens in Single topology.
 

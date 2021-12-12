@@ -42,6 +42,8 @@ class FileSystemStore():
         self.outDir = directory
 
     def put(self, filename, data, entry):
+        # Sanitize filename in ASCII
+        filename = "".join([c for c in filename if c.isalpha() or c.isdigit() or c in [' ','.']]).rstrip()
         file = open(self.outDir + "/" + filename, "wb")
         file.write(data)
         file.close()

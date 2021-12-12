@@ -47,3 +47,12 @@ Run `./migrate.py -h` to see all available options
 6. Remove obsolete data from GridFS
 
         ./migrate.py -c removeblobs -d /app/uploads -r rocketchat
+
+### Troubleshooting
+
+On some configurations, it might help to add the parameters "directconnection=True and connect=False" to the MongoClient constructor, such as:
+
+        MongoClient(..., retryWrites=False, directconnection=True, connect=False)[self.db]
+
+So that the connection happens in Single topology.
+

@@ -65,7 +65,7 @@ class AmazonS3Store():
     def put(self, filename, data, entry):
         key = self.uniqueID + "/uploads/" + entry['rid'] + "/" + entry[
             'userId'] + "/" + entry['_id']
-        if 'type' in entry.keys:
+        if 'type' in entry.keys():
             self.s3.Object(self.bucket, key).put(
                 Body=data,
                 ContentType=entry['type'],

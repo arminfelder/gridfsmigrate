@@ -99,7 +99,7 @@ class Migrator():
         uploadsCollection = db[collection]
         fs = gridfs.GridFSBucket(db, bucket_name=collection)
 
-        uploads = uploadsCollection.find({}, no_cursor_timeout=True)
+        uploads = uploadsCollection.find({}, no_cursor_timeout=True).batch_size(50)
 
         i = 0
         for upload in uploads:

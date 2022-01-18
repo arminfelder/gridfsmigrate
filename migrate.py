@@ -65,11 +65,15 @@ class AmazonS3Store():
     def put(self, filename, data, entry):
         key = self.uniqueID + "/uploads/" + entry['rid'] + "/" + entry[
             'userId'] + "/" + entry['_id']
-        self.s3.Object(self.bucket, key).put(
-            Body=data,
-            ContentType=entry['type'],
-            ContentDisposition='inline; filename="' + self.encodeURI(
-                entry['name']) + '"')
+        if 'type' in entry.keys():
+            self.s3.Object(self.bucket, key).put(
+                Body=data,
+                ContentType=entry['type'],
+                ContentDisposition='inline; filename="' + self.encodeURI(entry['name']) + '"')
+        else:
+            self.s3.Object(self.bucket, key).put(
+                Body=data,
+                ContentDisposition='inline; filename="' + self.encodeURI(entry['name']) + '"')
         return key
 
 

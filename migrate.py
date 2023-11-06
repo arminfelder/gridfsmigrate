@@ -127,7 +127,6 @@ class Migrator():
                             "id": gridfsId,
                             "file": filename,
                             "collection": collection,
-                            "md5": res.md5,
                             "key": key
                         })
                 else:
@@ -141,7 +140,7 @@ class Migrator():
         file = open(self.logfile, "a")
         for entry in self.log:
             line = entry["id"] + "," + entry["file"] + "," + entry[
-                "collection"] + ",log" + entry["md5"] + "," + entry[
+                "collection"] + ",log" + "," + entry[
                     "key"] + "\n"
             file.write(line)
         file.close()
@@ -164,8 +163,7 @@ class Migrator():
                 dbId = row[0]
                 filename = row[1]
                 collectionName = row[2]
-                md5 = row[3]
-                key = row[4]
+                key = row[3]
 
                 collection = db[collectionName]
                 update_data = {

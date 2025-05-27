@@ -1,1 +1,4 @@
 pymongo
+gridfs
+tqdm
+boto3
